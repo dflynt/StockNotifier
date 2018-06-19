@@ -7,25 +7,9 @@
     </head>
     <body>
         {% from "formhelpers.html" import render_field %}
-        <form method=post>
-            {{ form.firstName.label(class="FormLabel") }} 
-            {{ form.firstName(class="FormInputField") }}<br/>
-
-            {{ form.lastName.label(class="FormLabel") }}
-            {{ form.lastName(class="FormInputField") }}<br/>
-
-            {{ form.email.label(class="FormLabel") }}
-            {{ form.email(class="FormInputField") }}<br/>
-            
-            {{ form.username.label(class="FormLabel") }}
-            {{ form.username(class="FormInputField") }}<br/>
-            
-            {{ form.password.label(class="FormLabel") }}
-            {{ form.password(class="FormInputField") }}<br/>
-            
-            {{ form.phone.label(class="FormLabel") }}
-            {{ form.phone(class="FormInputField") }}<br/>
-            <input type=submit value=Register class="formSubmitButton">
+        <form action="register" method="post">
+            <!--Set form fields because wtforms is trash-->
+            <input type="submit" value="Register" class="formSubmitButton">
         </form>
     </body>
 </html>

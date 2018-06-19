@@ -11,16 +11,20 @@ def index():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    form = RegisterForm()
     if request.method == "POST" and form.validate():
-        pass
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        email = request.form['email']
+        username = request.form['username']
+        password = request.form['username']
+        phone = request.form['phone']
+        print(firstName + " " + lastName)
     else:
-        return render_template("register.html", form=form)
+        return render_template("register.html")
 
 @app.route("/login")
 def signin():
-    form = LoginForm()
-    return render_template("login.html", form=form)
+    return render_template("login.html")
 
 @app.route("/dashboard")
 def dashboard():
