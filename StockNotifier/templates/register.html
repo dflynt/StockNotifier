@@ -6,10 +6,13 @@
         <link  rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
-        {% from "formhelpers.html" import render_field %}
-        <form action="register" method="post">
-            <!--Set form fields because wtforms is trash-->
+        <form action="register" method="POST">
+            First name: <input type="text" class="formField" name="firstName"><br>
+            Last name: <input type="text" class="formField" name="lastName"><br>
+            Email: <input type="text" class="formField" name="email"><br>
+            Password: <input type="password" class="formField" name="password"><br>
+            Phone: <input type="number" class="formField" name="phone"><br>
             <input type="submit" value="Register" class="formSubmitButton">
-        </form>
+        </form> 
     </body>
 </html>

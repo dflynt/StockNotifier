@@ -6,15 +6,10 @@
         <link  rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
-        {% from "formhelpers.html" import render_field %}
-        <form method=post class = "form" action="/register">
-            {{ form.username.label(class="FormLabel") }} 
-            {{ form.username(class="FormInputField") }}<br/>
-
-            {{ form.password.label(class="FormLabel") }}
-            {{ form.password(class="FormInputField") }}<br/>
-
-            <input type=submit value=Register class="formSubmitButton">
+        <form action="login" method="POST">
+            Email: <input type="text" class="formField" name="email"><br>
+            Password: <input type="password" class="formField" name="password"><br>
+            <input type="submit" value="Login" class="formSubmitButton">
         </form>
     </body>
 </html>
