@@ -24,19 +24,18 @@ c.execute('''CREATE TABLE IF NOT EXISTS UserSettings (
 conn.commit()
 
 def insertNewUser(firstName, lastName, email, password, phone, AccConfirmed):
-    token = uuid.uuid5(uuid.NAMESPACE_URL, "danielflynt1@gmail.com")
-    strToken = email
+    token = uuid.uuid5(uuid.NAMESPACE_URL, email)
     c.execute("SELECT * FROM Users WHERE ID =?", (str(token),))
-    ##
-    alreadyRegistered = c.fetchone()[0]
-    if not alreadyRegistered:
-        c.execute("INSERT INTO Users (ID, FirstName, LastName, Email,"
-                "Passw, Phone, AccConfirmed) VALUES (?,?,?,?,?,?,?)", 
-                (str(token), firstName, lastName, email, password, str(phone), AccConfirmed))
-        conn.commit()
-        return True
+    result = c.fetchone()
+    if result is None: #not in the database yet
+            c.execute("INSERT INTO Users (ID, FirstName, LastName, Email,"
+                    "Passw, Phone, AccConfirmed) VALUES (?,?,?,?,?,?,?)", 
+                    (str(token), firstName, lastName, email, password, str(phone), AccConfirmed))
+            conn.commit()
+            return str(token)
     else:
-        return False
+        return -1 #user already in database
+
 def showUsers():
     c.execute("SELECT * FROM Users")
     row = c.fetchone()
@@ -47,10 +46,10 @@ def loginUser(email, password):
     c.execute("SELECT * FROM Users WHERE email = ?", (email,))
     row = c.fetchone()
     if row:
-        if row[4] == password:
-            return True
+        if row[4] == password: #if password matches password in the DB
+            return row[0] #return the token for future use
         else:
-            return False
+            return -1 #error code
     else:
-        return False
+        return -1
 from . import views
