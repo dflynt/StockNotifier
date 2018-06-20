@@ -30,7 +30,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
         token = loginUser(email, password)
-        if token != -1:
+        if token != -1: #-1 error code meaning email/password combo incorrect
             return redirect(url_for("dashboard", uuid=token))
         else:
             return render_template_string("<h5>Invalid login</h5>")
