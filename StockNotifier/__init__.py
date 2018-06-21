@@ -21,6 +21,11 @@ c.execute('''CREATE TABLE IF NOT EXISTS UserSettings (
             ID VARCHAR(30), 
             Symbol CHAR(5),
             FOREIGN KEY (ID) REFERENCES Users(ID))''')
+c.execute('''CREATE TABLE IF NOT EXISTS Stocks (
+            Security VARCHAR(30),
+            Symbol CHAR(5),
+            Sector VARCHAR(30))'''
+            )
 conn.commit()
 
 def insertNewUser(firstName, lastName, email, password, phone, AccConfirmed):
@@ -52,4 +57,7 @@ def loginUser(email, password):
             return -1 #error code
     else:
         return -1
+
+def checkSecurityDBForSecurity(input):
+    c.execute("SELECT * FROM ")
 from . import views

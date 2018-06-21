@@ -3,13 +3,16 @@
     <head>
         <title>Stock Notifier</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-        <link  rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link  rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="{{ url_for('static', filename='js/priceGrabber.js') }}"></script>
     </head>
     <body>
-        {%if uuid%}
-            <h1>{{ uuid }}</h1>
-        {%else%}
-            <h1>Hello world</h1>
-        {%endif%}
+        <form autocomplete="off" action="{{url_for('queryDBForSecurity')}}" method="POST">
+            <div class="autocomplete" style="width:300px;">
+                <input id="autoCompleteInput" type="text" name="security" placeholder="Symbol or Security">
+            </div>
+            <input type="submit">
+        </form>
     </body>
 </html>
