@@ -10,14 +10,9 @@
 
     </head>
     <body>
-        <form autocomplete="off" action="{{url_for('queryDBForSecurity')}}" method="POST">
-            <div class="autocomplete" style="width:300px;">
-                <input id="autoCompleteInput" type="text" name="security" placeholder="Symbol or Security">
-            </div>
-            <input type="submit">
-        </form>
-        <div id="searchResults">
-            <ul id="searchResultsList" style="list-style-type: none;">
+        <div class="stockSearchContainer" style="width:300px;">
+            <input id="autoCompleteInput" type="text" name="security" placeholder="Symbol or Security">
+            <ul id="searchResultsList" style="list-style-type: none; padding: 0;">
             </ul>
         </div>
     </body>

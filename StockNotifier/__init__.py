@@ -62,4 +62,17 @@ def checkStockDBWithInput(input):
     c.execute("SELECT * FROM Stocks WHERE Symbol LIKE ? OR Security LIKE ? LIMIT 5", ("%"+input+"%", "%"+input+"%"))
     results = c.fetchall()
     return results
+
+def addStockToUserList(input, token):
+    c.execute("INSERT INTO UserSettings (ID, Symbol) VALUES (?,?)", (token, input))
+    return True
+
+def returnStockList(token):
+    c.execute("SELECT Symbol FROM UserSettings WHERE ID = ?", (token,))
+    results = c.fetchall()
+    if results:
+        return results
+    else:
+        return False
+
 from . import views

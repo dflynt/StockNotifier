@@ -1,5 +1,5 @@
 from . import app, c, conn
-from . import insertNewUser, showUsers, loginUser, checkStockDBWithInput
+from . import returnStockList, addStockToUserList, insertNewUser, showUsers, loginUser, checkStockDBWithInput
 from flask import jsonify, render_template, request, url_for, render_template_string, redirect, session
 from .forms import RegisterForm, LoginForm, AddStockForm
 #views = Blueprint("views", __name__, template_folder="templates")
@@ -57,5 +57,17 @@ def queryDBForSecurity():
     result = checkStockDBWithInput(query)
     return jsonify(result)
 
+@app.route("/addStockToWatchList", methods=["POST"])
+def addStockToWatchList():
+    input = request.get_json()
+    symbol = input["symbol"]
+    result = addStockToUserList(symbol, session['tokenID'])
+    return jsonify(result)
 
+@app.route("/getStockListForUser", methods=["POST"])
+def getStockListForUser():
+    input = request.get_json()
+    token = input["token"]
+    result = returnStockList(token)
+    return jsonify(result)
     
