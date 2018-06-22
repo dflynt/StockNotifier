@@ -1,6 +1,6 @@
 from . import app, c, conn
-from . import insertNewUser, showUsers, loginUser, checkSecurityDBForSecurity
-from flask import render_template, request, url_for, render_template_string, redirect, session
+from . import insertNewUser, showUsers, loginUser, checkStockDBWithInput
+from flask import jsonify, render_template, request, url_for, render_template_string, redirect, session
 from .forms import RegisterForm, LoginForm, AddStockForm
 #views = Blueprint("views", __name__, template_folder="templates")
 
@@ -52,4 +52,10 @@ def dashboard(uuid):
 
 @app.route("/queryDBForSecurity", methods=["POST"])
 def queryDBForSecurity():
+    input = request.get_json()
+    query = input["input"]
+    result = checkStockDBWithInput(query)
+    return jsonify(result)
+
+
     

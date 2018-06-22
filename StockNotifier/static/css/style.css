@@ -1,3 +1,13 @@
 body {
     background-color: #CBCBCB;
 }
+
+.stockResult_li {
+    padding: 5px;
+    width: 10%;
+    background-color: gainsboro;
+}
+.stockResult_li:hover {
+    background-color: whitesmoke;
+
+}
