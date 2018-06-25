@@ -16,7 +16,16 @@ $(document).ready(function() {
         contentType: "application/json",
         data: JSON.stringify({"token": token}),
         success: function(response) {
-            console.log(response);
+            var stockList = ""
+            if(response != false) {
+                for(var stock = 0; stock < response.length; stock++){
+                    stockList+=response[stock] + ",";
+                }
+                //remove last comma
+                stockList = stockList.substring(0, stockList.length - 1); 
+                var helper = new PriceGrabberHelper(stockList);
+                helper.myTimer();
+            }
         },
         error: function(response) {
             console.log(response);

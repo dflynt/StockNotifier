@@ -59,7 +59,7 @@ def loginUser(email, password):
         return -1
 
 def checkStockDBWithInput(input):
-    c.execute("SELECT * FROM Stocks WHERE Symbol LIKE ? OR Security LIKE ? LIMIT 5", ("%"+input+"%", "%"+input+"%"))
+    c.execute("SELECT * FROM Stocks WHERE Symbol LIKE ? OR Security LIKE ? LIMIT 5", (input+"%", "%"+input+"%"))
     results = c.fetchall()
     return results
 
