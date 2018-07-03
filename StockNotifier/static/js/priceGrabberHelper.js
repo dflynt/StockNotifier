@@ -1,8 +1,9 @@
-function PriceGrabberHelper(stockList) {
-    this.stockList = stockList;
-    this.myTimer = function() {setInterval(this.apiCall, 10000)};
-    this.apiCall = function() {
-        var url = "https://api.iextrading.com/1.0//stock/market/batch?symbols=" +stockList+"&types=quote";
+var helperInfo = {
+    stockList: ""
+};
+function APICall() {
+    if(!helperInfo.stockList == "") {
+        var url = "https://api.iextrading.com/1.0//stock/market/batch?symbols=" +helperInfo.stockList+"&types=quote";
         $.ajax({
             url: url,
             type: "GET",
@@ -10,7 +11,16 @@ function PriceGrabberHelper(stockList) {
             contentType: "application/json",
             success: function(response) {
                 for(var key in response) {
-                    console.log(response[key]['quote']['symbol'] + ": $" + response[key]['quote']['iexRealtimePrice']);
+                    var stockSymbol = response[key]['quote']['symbol'];
+                    var stockPrice = response[key]['quote']['iexRealtimePrice'];
+                    if($("#" + stockSymbol).length == 0){ //doesn't exist
+                        $("#userStockList").append("<a href='#' class = stock id = " + stockSymbol + ">" + 
+                        "" + stockSymbol + ": $" + stockPrice + " </a><br>");
+                    }
+                    else {
+                        $("#" + stockSymbol).html(stockSymbol + ": $" + stockPrice + " ");   
+
+                    } 
                 }
             },
             error: function(response) {
@@ -18,4 +28,12 @@ function PriceGrabberHelper(stockList) {
             }
         });
     }
+    this.addToWatchList = function(stockToAdd) {
+        this.stockList = this.stockList +","+stockToAdd;
+    }
+}
+
+function recursiveAPICall() {
+    console.log(helperInfo.stockList);
+    setInterval(APICall, 5000);
 }

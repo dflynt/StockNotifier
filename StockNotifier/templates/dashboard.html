@@ -10,10 +10,14 @@
 
     </head>
     <body>
-        <div class="stockSearchContainer" style="width:300px;">
+        <div class="stockSearchContainer" style="width:300px;z-index: 1; position:absolute;">
             <input id="autoCompleteInput" type="text" name="security" placeholder="Symbol or Security">
             <ul id="searchResultsList" style="list-style-type: none; padding: 0;">
+            <!--ul li onclick append to list-->
             </ul>
+        </div>
+        <div id = "userStockList" style=" position: absolute; margin-top:5%;">
+
         </div>
     </body>
 </html>

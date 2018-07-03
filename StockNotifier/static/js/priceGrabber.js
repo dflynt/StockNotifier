@@ -23,14 +23,17 @@ $(document).ready(function() {
                 }
                 //remove last comma
                 stockList = stockList.substring(0, stockList.length - 1); 
-                var helper = new PriceGrabberHelper(stockList);
-                helper.myTimer();
+                helperInfo.stockList = stockList; //make first api call when user logs in
+                APICall();
+                recursiveAPICall();
             }
         },
         error: function(response) {
             console.log(response);
         }
     });
+
+    //function for autocomplete when searching for new stocks
     $("#autoCompleteInput").on("keyup", function(event){ 
         //keypress didn't print first value so use keyup
         var currentInput = $("#autoCompleteInput").val();
@@ -57,15 +60,16 @@ $(document).ready(function() {
         }
         else {
             console.log("display, none");
-            $("#searchResultsList").css("display", "none");
+
             
         }
     })
+
+    //add symbol to watch list
     $(".stockSearchContainer ul").on("click", "li", function() {
         var value = $(this).text().split("(");
         var symbol = value[1];
         symbol = symbol.replace(")","");
-        console.log(symbol);
         $.ajax({
             url: "/addStockToWatchList",
             type: "POST",
@@ -73,11 +77,27 @@ $(document).ready(function() {
             contentType: "application/json",
             data: JSON.stringify({"symbol": symbol}),
             success: function(response) {
-                console.log(response);
+                if(helperInfo.stockList == "") {
+                    $("#userStockList").append("<a href='#' class = stock id = " + symbol + ">" + 
+                    "" + symbol + "$ ... </a><br>");
+                    $("#searchResultsList").css("display", "none");
+                    $("#autoCompleteInput").val("");
+                    helperInfo.stockList = response;
+                    recursiveAPICall();
+                }
+                else {
+                    $("#userStockList").append("<a href='#' class = stock id = " + symbol + ">" + 
+                    "" + symbol + ": $  ... </a><br>");
+                    $("#searchResultsList").css("display", "none");
+                    $("#autoCompleteInput").val("");
+                    helperInfo.stockList += "," + response;
+                    recursiveAPICall();
+                }
             },
             error: function(response) {
                 console.log(response);
             }
         })
     });
+
 });

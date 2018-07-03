@@ -20,12 +20,13 @@ c.execute('''CREATE TABLE IF NOT EXISTS Users (
 c.execute('''CREATE TABLE IF NOT EXISTS UserSettings (
             ID VARCHAR(30), 
             Symbol CHAR(5),
+            SellPrice INT,
+            BuyPrice INT,
             FOREIGN KEY (ID) REFERENCES Users(ID))''')
 c.execute('''CREATE TABLE IF NOT EXISTS Stocks (
             Security VARCHAR(30),
-            Symbol CHAR(5),
-            Sector VARCHAR(30))'''
-            )
+            Symbol CHAR(5)
+            )''')
 conn.commit()
 
 def insertNewUser(firstName, lastName, email, password, phone, AccConfirmed):
@@ -64,8 +65,11 @@ def checkStockDBWithInput(input):
     return results
 
 def addStockToUserList(input, token):
-    c.execute("INSERT INTO UserSettings (ID, Symbol) VALUES (?,?)", (token, input))
-    return True
+    c.execute("SELECT * FROM UserSettings WHERE ID = ? AND Symbol = ? ", (token, input))
+    results = c.fetchall()
+    if not results:
+        c.execute("INSERT INTO UserSettings (ID, Symbol) VALUES (?,?)", (token, input))
+    return input
 
 def returnStockList(token):
     c.execute("SELECT Symbol FROM UserSettings WHERE ID = ?", (token,))
