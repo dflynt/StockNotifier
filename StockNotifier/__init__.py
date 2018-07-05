@@ -69,13 +69,18 @@ def addStockToUserList(input, token):
     results = c.fetchall()
     if not results:
         c.execute("INSERT INTO UserSettings (ID, Symbol) VALUES (?,?)", (token, input))
-    return input
+        conn.commit()
+        return input
+    return False
 
 def returnStockList(token):
     c.execute("SELECT Symbol FROM UserSettings WHERE ID = ?", (token,))
     results = c.fetchall()
+    c.execute("SELECT FirstName FROM Users WHERE ID = ?", (token,))
+    name = c.fetchall()
+    results = name + results
     if results:
-        return results
+        return results 
     else:
         return False
 

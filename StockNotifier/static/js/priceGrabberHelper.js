@@ -14,8 +14,8 @@ function APICall() {
                     var stockSymbol = response[key]['quote']['symbol'];
                     var stockPrice = response[key]['quote']['iexRealtimePrice'];
                     if($("#" + stockSymbol).length == 0){ //doesn't exist
-                        $("#userStockList").append("<a href='#' class = stock id = " + stockSymbol + ">" + 
-                        "" + stockSymbol + ": $" + stockPrice + " </a><br>");
+                        $("#userStockList").append("<button type='button' class='btn btn-primary' id = " + stockSymbol + ">" + 
+                        "" + stockSymbol + ": $" + stockPrice + " </button>");
                     }
                     else {
                         $("#" + stockSymbol).html(stockSymbol + ": $" + stockPrice + " ");   
@@ -35,5 +35,5 @@ function APICall() {
 
 function recursiveAPICall() {
     console.log(helperInfo.stockList);
-    setInterval(APICall, 5000);
+    setInterval(APICall, 1000);
 }

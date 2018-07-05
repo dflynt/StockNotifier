@@ -69,6 +69,5 @@ def getStockListForUser():
     input = request.get_json()
     token = input["token"]
     result = returnStockList(token)
-    print(result)
     return jsonify(result)
     
