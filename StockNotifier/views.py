@@ -1,5 +1,5 @@
 from . import app, c, conn
-from . import returnStockList, addStockToUserList, insertNewUser, showUsers, loginUser, checkStockDBWithInput
+from . import sendEmailToAlertUser, returnStockList, addStockToUserList, insertNewUser, showUsers, loginUser, checkStockDBWithInput
 from flask import jsonify, render_template, request, url_for, render_template_string, redirect, session
 from .forms import RegisterForm, LoginForm, AddStockForm
 #views = Blueprint("views", __name__, template_folder="templates")
@@ -71,3 +71,10 @@ def getStockListForUser():
     result = returnStockList(token)
     return jsonify(result)
     
+@app.route("/priceThresholdMet_sendEmail", methods=["POST"])
+def priceThresholdMet_sendEmail():
+    input = request.get_json()
+    token = input["token"]
+    reason = input["reason"] #is the reason to buy or sell
+    result = sendEmailToAlertUser(token, reason)
+    return jsonify(result)

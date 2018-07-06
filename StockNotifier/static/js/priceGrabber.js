@@ -18,7 +18,6 @@ $(document).ready(function() {
         success: function(response) {
             var stockList = ""
             $("#clientName").html(response[0]);
-            console.log("response: " + response);
             if(response != false) {
                 for(var stock = 1; stock < response.length; stock++){ //response is an array here, NOT a json object
                     stockList+=response[stock] + ",";
@@ -26,8 +25,8 @@ $(document).ready(function() {
                 //remove last comma
                 stockList = stockList.substring(0, stockList.length - 1); 
                 helperInfo.stockList = stockList; //make first api call when user logs in
-                APICall();
-                recursiveAPICall();
+                APICall(); //method in priceGrabberHelper.js
+                recursiveAPICall(); //method in priceGrabberHelper.js
             }
         },
         error: function(response) {
@@ -85,7 +84,7 @@ $(document).ready(function() {
                     $("#searchResultsList").css("display", "none");
                     $("#autoCompleteInput").val("");
                     helperInfo.stockList = response;
-                    recursiveAPICall();
+                    recursiveAPICall(); //method in priceGrabberHelper.js
                 }
                 else if (!helperInfo.stockList.includes(stockSymbol)){ //if symbol isn't already listed
                     $("#userStockList").append("<button type='button' class='btn btn-primary' id = " + stockSymbol + ">" + 
@@ -93,7 +92,7 @@ $(document).ready(function() {
                     $("#searchResultsList").css("display", "none");
                     $("#autoCompleteInput").val("");
                     helperInfo.stockList += "," + response;
-                    recursiveAPICall();
+                    recursiveAPICall(); //method in priceGrabberHelper.js
                 }
             },
             error: function(response) {
@@ -101,5 +100,24 @@ $(document).ready(function() {
             }
         })
     });
-
+    
+    $(document).on('click', "button .btn btn-primary", function() {
+        MakeChart(this.id);
+        //show form to set buy/sell threshold
+    });
+    $(document).on('click', 'a', function() {
+        $.ajax({
+            url: "/priceThresholdMet_sendEmail",
+            type: "POST",
+            dataType: "JSON",
+            contentType: "application/json",
+            data: JSON.stringify({"token": token, "reason": "Sell FB"}),
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    })
 });

@@ -1,4 +1,5 @@
 from flask import Flask, g
+import smtplib
 import uuid
 from flask_bootstrap import Bootstrap
 import sqlite3
@@ -6,6 +7,10 @@ import sqlite3
 app = Flask(__name__)
 app.config.update(dict(SECRET_KEY="powerful secretkey", WTF_CSRF_SECRET_KEY="a secret key"))
 Bootstrap(app)
+s = smtplib.SMTP('smtp.gmail.com', 587)
+# start TLS for security
+s.starttls()
+s.login("danielflynt1@gmail.com", "Twentyone21!@#")
 conn = sqlite3.connect("stocknotifier.db", check_same_thread=False)
 c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS Users (
@@ -83,5 +88,13 @@ def returnStockList(token):
         return results 
     else:
         return False
+
+def sendEmailToAlertUser(token, reason):
+    c.execute("SELECT Email from Users WHERE ID = ?", (token,))
+    email = c.fetchone()
+
+    message = reason
+    s.sendmail("danielflynt1@gmail.com", "danielflynt1@gmail.com", message)
+    s.quit()
 
 from . import views

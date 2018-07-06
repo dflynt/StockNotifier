@@ -34,6 +34,5 @@ function APICall() {
 }
 
 function recursiveAPICall() {
-    console.log(helperInfo.stockList);
     setInterval(APICall, 1000);
 }

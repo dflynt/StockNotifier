@@ -14,3 +14,10 @@ body {
 
 #headerDiv {
 }
+
+.priceInputLabel {
+    float:left;
+}
+.priceInputbox {
+    float: left;
+}
