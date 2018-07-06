@@ -71,6 +71,10 @@ def getStockListForUser():
     result = returnStockList(token)
     return jsonify(result)
     
+@app.route("/setBuyThreshold", methods=["POST"])
+def setBuyThreshold():
+    input = request.get_json()
+    stockSymbol = input["stockSymbol"]
 @app.route("/priceThresholdMet_sendEmail", methods=["POST"])
 def priceThresholdMet_sendEmail():
     input = request.get_json()

@@ -101,11 +101,29 @@ $(document).ready(function() {
         })
     });
     
-    $(document).on('click', "button .btn btn-primary", function() {
+    $(document).on('click', "button", function() {
         MakeChart(this.id);
         //show form to set buy/sell threshold
     });
-    $(document).on('click', 'a', function() {
+    $(document).on('click', '#setBuyThreshold', function() {
+        var buyThreshold = $("buyThresholdTextBox").val();
+        if (buyThreshold.length != 0
+        $.ajax({
+            url: "/priceThresholdMet_sendEmail",
+            type: "POST",
+            dataType: "JSON",
+            contentType: "application/json",
+            data: JSON.stringify({"token": token, "reason": "Sell FB"}),
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    })
+    $(document).on('click', "#setSellThreshold", function() {
+        var sellThreshold = $("sellThresholdTextBox").val();
         $.ajax({
             url: "/priceThresholdMet_sendEmail",
             type: "POST",
