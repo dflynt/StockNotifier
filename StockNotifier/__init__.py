@@ -23,10 +23,10 @@ c.execute('''CREATE TABLE IF NOT EXISTS Users (
             AccConfirmed TINYINT(1),
             PRIMARY KEY (ID))''')
 c.execute('''CREATE TABLE IF NOT EXISTS UserSettings (
-            ID VARCHAR(30), 
-            Symbol CHAR(5),
-            SellPrice INT,
-            BuyPrice INT,
+            ID VARCHAR(35), 
+            Symbol VARCHAR(5),
+            SellPrice INT NOT NULL,
+            BuyPrice INT NOT NULL,
             FOREIGN KEY (ID) REFERENCES Users(ID))''')
 c.execute('''CREATE TABLE IF NOT EXISTS Stocks (
             Security VARCHAR(30),
@@ -69,17 +69,17 @@ def checkStockDBWithInput(input):
     results = c.fetchall()
     return results
 
-def addStockToUserList(input, token):
+def addStockToUserList(input, token, buyThreshold, sellThreshold):
     c.execute("SELECT * FROM UserSettings WHERE ID = ? AND Symbol = ? ", (token, input))
     results = c.fetchall()
     if not results:
-        c.execute("INSERT INTO UserSettings (ID, Symbol) VALUES (?,?)", (token, input))
+        c.execute("INSERT INTO UserSettings (ID, Symbol, BuyPrice, SellPrice) VALUES (?,?,?,?)", (token, input, -1, -1))
         conn.commit()
         return input
     return False
 
 def returnStockList(token):
-    c.execute("SELECT Symbol FROM UserSettings WHERE ID = ?", (token,))
+    c.execute("SELECT Symbol, BuyPrice, SellPrice FROM UserSettings WHERE ID = ?", (token,))
     results = c.fetchall()
     c.execute("SELECT FirstName FROM Users WHERE ID = ?", (token,))
     name = c.fetchall()
@@ -95,6 +95,18 @@ def sendEmailToAlertUser(token, reason):
 
     message = reason
     s.sendmail("danielflynt1@gmail.com", "danielflynt1@gmail.com", message)
-    s.quit()
 
+def createSellThreshold(stockSymbol, sellThreshold, token):
+    c.execute("UPDATE UserSettings SET SellPrice = ? WHERE Symbol = ? AND ID = ?", (sellThreshold, stockSymbol, token))
+    conn.commit()
+    c.execute("SELECT SellPrice FROM UserSettings WHERE ID = ?", (token,))
+    print(c.fetchall())
+    return True
+
+def createBuyThreshold(stockSymbol, buyThreshold, token):
+    c.execute("UPDATE UserSettings SET BuyPrice = ? WHERE Symbol = ? AND ID = ?", (buyThreshold, stockSymbol, token))
+    conn.commit()
+    c.execute("SELECT BuyPrice   FROM UserSettings WHERE ID = ?", (token,))
+    print(c.fetchall())
+    return True
 from . import views

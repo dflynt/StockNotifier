@@ -1,14 +1,9 @@
 $(document).ready(function() {
-    /*
-    var address = "https://api.iextrading.com/1.0//stock/market/batch?symbols=aapl,fb,tsla,P,I,J,Q,U,W&types=quote";
-    $.get(address, function(data) {
-        console.log(data);
-        $("#output").text(data);
-    })
-    */
+
    var url = window.location.pathname; //returns /dashboard/User's Token
    var token = url.split("/")[2];
-   console.log(token);
+   var selectedStock = ""; //used when making api call to set buy/sell threshold
+   var stock_BuySellDict = {};
    $.ajax({
         url: "/getStockListForUser",
         type: "POST",
@@ -16,16 +11,26 @@ $(document).ready(function() {
         contentType: "application/json",
         data: JSON.stringify({"token": token}),
         success: function(response) {
-            var stockList = ""
-            $("#clientName").html(response[0]);
+            var stockList = "";
+            $("#clientName").html(response[0]); //set header name
             if(response != false) {
                 for(var stock = 1; stock < response.length; stock++){ //response is an array here, NOT a json object
-                    stockList+=response[stock] + ",";
+                    stockList+=response[stock][0] + ",";
+                    var buyThreshold = response[stock][1];
+                    var sellThreshold = response[stock][2];
+                    var arr = [buyThreshold, sellThreshold];
+                    stock_BuySellDict[response[stock][0]] = arr;
+                    stock_BuySellDict[response[stock][0]].emailSent = false;
+
+                    //key is stock symbol
+                    //value is array [buyPrice, sellPrice]
                 }
                 //remove last comma
                 stockList = stockList.substring(0, stockList.length - 1); 
+                helperInfo.token = token;
                 helperInfo.stockList = stockList; //make first api call when user logs in
-                APICall(); //method in priceGrabberHelper.js
+                helperInfo.stock_BuySellDict = stock_BuySellDict;
+                APICall(stock_BuySellDict); //method in priceGrabberHelper.js
                 recursiveAPICall(); //method in priceGrabberHelper.js
             }
         },
@@ -67,16 +72,14 @@ $(document).ready(function() {
     //add symbol to watch list
     $(".stockSearchContainer ul").on("click", "li", function() {
         var value = $(this).text().split("(");
-        console.log("Value after split '(': " + value);
         var symbol = value[1];
         var stockSymbol = symbol.replace(")","");
-        console.log("stockSymbol after replace ')'" + stockSymbol);
         $.ajax({
             url: "/addStockToWatchList",
             type: "POST",
             dataType: "JSON",
             contentType: "application/json",
-            data: JSON.stringify({"symbol": stockSymbol}),
+            data: JSON.stringify({"symbol": stockSymbol, "buyThreshold": -1, "sellThreshold": -1}),
             success: function(response) {
                 if(helperInfo.stockList == "") { //if new list 
                     $("#userStockList").append("<button type='button' class='btn btn-primary' id = " + stockSymbol + ">" + 
@@ -84,6 +87,7 @@ $(document).ready(function() {
                     $("#searchResultsList").css("display", "none");
                     $("#autoCompleteInput").val("");
                     helperInfo.stockList = response;
+                    helperInfo.stock_BuySellDict[stockSymbol] = [-1, -1];
                     recursiveAPICall(); //method in priceGrabberHelper.js
                 }
                 else if (!helperInfo.stockList.includes(stockSymbol)){ //if symbol isn't already listed
@@ -92,6 +96,7 @@ $(document).ready(function() {
                     $("#searchResultsList").css("display", "none");
                     $("#autoCompleteInput").val("");
                     helperInfo.stockList += "," + response;
+                    helperInfo.stock_BuySellDict[stockSymbol] = [-1, -1];
                     recursiveAPICall(); //method in priceGrabberHelper.js
                 }
             },
@@ -102,40 +107,46 @@ $(document).ready(function() {
     });
     
     $(document).on('click', "button", function() {
+        selectedStock = this.id;
         MakeChart(this.id);
         //show form to set buy/sell threshold
     });
     $(document).on('click', '#setBuyThreshold', function() {
-        var buyThreshold = $("buyThresholdTextBox").val();
-        if (buyThreshold.length != 0
-        $.ajax({
-            url: "/priceThresholdMet_sendEmail",
-            type: "POST",
-            dataType: "JSON",
-            contentType: "application/json",
-            data: JSON.stringify({"token": token, "reason": "Sell FB"}),
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(response) {
-                console.log(response);
-            }
-        });
+        var buyThreshold = $("#buyThresholdTextBox").val();
+        helperInfo.stock_BuySellDict[selectedStock][0] = buyThreshold;
+        if (buyThreshold.length != 0) {
+            $.ajax({
+                url: "/setBuyThreshold",
+                type: "POST",
+                dataType: "JSON",
+                contentType: "application/json",
+                data: JSON.stringify({"token": token, "stockSymbol": selectedStock, "buyThreshold": buyThreshold}),
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(response) {
+                    console.log(response);
+                }
+            });
+        }
     })
     $(document).on('click', "#setSellThreshold", function() {
-        var sellThreshold = $("sellThresholdTextBox").val();
-        $.ajax({
-            url: "/priceThresholdMet_sendEmail",
-            type: "POST",
-            dataType: "JSON",
-            contentType: "application/json",
-            data: JSON.stringify({"token": token, "reason": "Sell FB"}),
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(response) {
-                console.log(response);
-            }
-        });
+        var sellThreshold = $("#sellThresholdTextBox").val();
+        helperInfo.stock_BuySellDict[selectedStock][1] = sellThreshold;
+        if(sellThreshold.length != 0) {
+            $.ajax({
+                url: "/setSellThreshold",
+                type: "POST",
+                dataType: "JSON",
+                contentType: "application/json",
+                data: JSON.stringify({"token": token, "stockSymbol": selectedStock, "sellThreshold": sellThreshold}),
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(response) {
+                    console.log(response);
+                }
+            });
+        }
     })
 });

@@ -8,7 +8,7 @@
         <script src="{{ url_for('static', filename='js/priceGrabber.js') }}"></script>
         <script src="{{ url_for('static', filename='js/priceGrabberHelper.js') }}"></script>
         <script src="{{ url_for('static', filename='js/ChartJSImpl.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>    
     </head>
     <body>
         <div class="container">
@@ -32,7 +32,9 @@
                     <a href="#" id="setBuyThreshold">Set Buy Threshold</a>
                     <input type="text" id="sellThresholdTextBox">
                     <a href="#" id="setSellThreshold">Set Sell Threshold</a>
-                    <canvas id="myChart" width="300" height="200"></canvas>
+                    <div id="myChartDiv">
+                        <canvas id="myChart" style="height: 400px; width: content-box;"></canvas>
+                    </div>                    
                 </div>
             </div>
         </div>

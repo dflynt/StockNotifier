@@ -13,6 +13,7 @@ body {
 }
 
 #headerDiv {
+    
 }
 
 .priceInputLabel {
@@ -20,4 +21,8 @@ body {
 }
 .priceInputbox {
     float: left;
+}
+canvas {
+    height: 500px;
+    width: 400px
 }

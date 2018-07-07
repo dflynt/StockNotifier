@@ -1,5 +1,5 @@
 from . import app, c, conn
-from . import sendEmailToAlertUser, returnStockList, addStockToUserList, insertNewUser, showUsers, loginUser, checkStockDBWithInput
+from . import createSellThreshold, createBuyThreshold, sendEmailToAlertUser, returnStockList, addStockToUserList, insertNewUser, showUsers, loginUser, checkStockDBWithInput
 from flask import jsonify, render_template, request, url_for, render_template_string, redirect, session
 from .forms import RegisterForm, LoginForm, AddStockForm
 #views = Blueprint("views", __name__, template_folder="templates")
@@ -61,7 +61,8 @@ def queryDBForSecurity():
 def addStockToWatchList():
     input = request.get_json()
     symbol = input["symbol"]
-    result = addStockToUserList(symbol, session['tokenID'])
+    result = addStockToUserList(symbol, session['tokenID'], -1, -1)
+    #default buyThreshold and sellThreshold is -1
     return jsonify(result)
 
 @app.route("/getStockListForUser", methods=["POST"])
@@ -74,7 +75,21 @@ def getStockListForUser():
 @app.route("/setBuyThreshold", methods=["POST"])
 def setBuyThreshold():
     input = request.get_json()
+    token = input["token"]
     stockSymbol = input["stockSymbol"]
+    buyThreshold = input["buyThreshold"]
+    result = createBuyThreshold(stockSymbol, buyThreshold, token)
+    return jsonify(result)
+
+@app.route("/setSellThreshold", methods=["POST"])
+def setSellThreshold():
+    input = request.get_json()
+    token = input["token"]
+    stockSymbol = input["stockSymbol"]
+    sellThreshold = input["sellThreshold"]
+    result = createSellThreshold(stockSymbol, sellThreshold, token)
+    return jsonify(result)
+
 @app.route("/priceThresholdMet_sendEmail", methods=["POST"])
 def priceThresholdMet_sendEmail():
     input = request.get_json()
