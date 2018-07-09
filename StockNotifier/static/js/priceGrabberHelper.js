@@ -3,7 +3,8 @@ var helperInfo = {
     stockList: "",
     stock_BuySellDict: {}
 };
-function APICall(stock_BuySellDict) {
+function APICall() {
+    var graphDisplayed = false;
     if(!helperInfo.stockList == "") {
         var url = "https://api.iextrading.com/1.0//stock/market/batch?symbols=" +helperInfo.stockList+"&types=quote";
         $.ajax({
@@ -15,6 +16,8 @@ function APICall(stock_BuySellDict) {
                 for(var key in response) {
                     var stockSymbol = response[key]['quote']['symbol'];
                     var stockPrice = "";
+                    //if no current price,
+                    //EX: this will be true on the weekend when markets are closed
                     if(response[key]['quote']['iexRealtimePrice'] == null) {
                         stockPrice = response[key]['quote']['latestPrice'];
                     }
@@ -23,19 +26,21 @@ function APICall(stock_BuySellDict) {
                     }
                     if($("#" + stockSymbol).length == 0){ //if the button doesn't already exist
                         $("#userStockList").append("<button type='button' class='btn btn-primary' id = " + stockSymbol + ">" + 
-                        "" + stockSymbol + ": $" + stockPrice + " </button>");
+                        "" + stockSymbol + ": $" + stockPrice.toFixed(2) + " </button>");
+
+                        //if statement is a simple state mechanism to display only 
+                        //the first stock in the user's watchlist once the page loads
+                        if(graphDisplayed == false) {
+                            $("#" + stockSymbol).click();
+                            graphDisplayed = true;
+                        }
                     }
+                    //else, update value of the already existing button
                     else {
-                        $("#" + stockSymbol).html(stockSymbol + ": $" + stockPrice + " ");   
+                        $("#" + stockSymbol).html(stockSymbol + ": $" + stockPrice.toFixed(2) + " ");   
                     }
-                    var buyThresholdPrice;
-                    var sellThresholdPrice;
-                    if(typeof helperInfo.stock_BuySellDict[stockSymbol][0] !== "undefined") {
-                        buyThresholdPrice = helperInfo.stock_BuySellDict[stockSymbol][0];
-                    }
-                    if(typeof helperInfo.stock_BuySellDict[stockSymbol][1] !== "undefined") {
-                        sellThresholdPrice= helperInfo.stock_BuySellDict[stockSymbol][1];
-                    }
+                    var buyThresholdPrice = helperInfo.stock_BuySellDict[stockSymbol][0];
+                    var sellThresholdPrice = helperInfo.stock_BuySellDict[stockSymbol][1]
                     var emailSent = helperInfo.stock_BuySellDict[stockSymbol].emailSent;
                     
                     if(stockPrice >= sellThresholdPrice && sellThresholdPrice != -1 && emailSent == false) {
@@ -73,21 +78,19 @@ function APICall(stock_BuySellDict) {
                     else {
                         //not in the buy/sell threshold so reset the variable 
                         //once it's back in the threshold, an email will be sent
-                        //if statement to avoid making the write to memory
+                        //the use of the if statement is to avoid making the write to memory
                         //it saves maybe .00001 seconds
                         if(helperInfo.stock_BuySellDict[stockSymbol].emailSent != false) {
-                            helperInfo.stock_BuySellDict[stockSymbol].emailSent != false;
+                            helperInfo.stock_BuySellDict[stockSymbol].emailSent = false;
                         }
                     }
                 }
+                
             },
             error: function(response) {
                 console.log(response);
             }
         });
-    }
-    this.addToWatchList = function(stockToAdd) {
-        this.stockList = this.stockList +","+stockToAdd;
     }
 }
 

@@ -1,5 +1,5 @@
 body {
-    background-color: #CBCBCB;
+    background-color: #fdfdfd;
 }
 
 .stockResult_li {
@@ -11,7 +11,12 @@ body {
     background-color: whitesmoke;
 
 }
+#graphAndThresholdBtns {
+   background-color: #CBCBCB;
+}
+#watchList {
 
+}
 #headerDiv {
     
 }

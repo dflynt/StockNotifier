@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-   var url = window.location.pathname; //returns /dashboard/User's Token
+   var url = window.location.pathname; //returns address/dashboard/User-Token
    var token = url.split("/")[2];
    var selectedStock = ""; //used when making api call to set buy/sell threshold
    var stock_BuySellDict = {};
@@ -12,7 +12,7 @@ $(document).ready(function() {
         data: JSON.stringify({"token": token}),
         success: function(response) {
             var stockList = "";
-            $("#clientName").html(response[0]); //set header name
+            $("#clientName").html("Hello, " + response[0]); //set header name
             if(response != false) {
                 for(var stock = 1; stock < response.length; stock++){ //response is an array here, NOT a json object
                     stockList+=response[stock][0] + ",";
@@ -27,10 +27,11 @@ $(document).ready(function() {
                 }
                 //remove last comma
                 stockList = stockList.substring(0, stockList.length - 1); 
+                //helperInfo found in priceGrabberHelper.js
                 helperInfo.token = token;
                 helperInfo.stockList = stockList; //make first api call when user logs in
                 helperInfo.stock_BuySellDict = stock_BuySellDict;
-                APICall(stock_BuySellDict); //method in priceGrabberHelper.js
+                APICall(); //method in priceGrabberHelper.js
                 recursiveAPICall(); //method in priceGrabberHelper.js
             }
         },
@@ -108,9 +109,15 @@ $(document).ready(function() {
     
     $(document).on('click', "button", function() {
         selectedStock = this.id;
-        MakeChart(this.id);
+        MakeChart(this.id, "1d");
         //show form to set buy/sell threshold
     });
+
+    $("#graphAndThresholdBtns a").on("click", function() {
+        //Because chartInfo.stockSymbol is set once the page loads
+        //It's possible to access it without it being null
+        MakeChart(chartInfo.stockSymbol, this.id);
+    })
     $(document).on('click', '#setBuyThreshold', function() {
         var buyThreshold = $("#buyThresholdTextBox").val();
         helperInfo.stock_BuySellDict[selectedStock][0] = buyThreshold;
@@ -129,7 +136,8 @@ $(document).ready(function() {
                 }
             });
         }
-    })
+    });
+
     $(document).on('click', "#setSellThreshold", function() {
         var sellThreshold = $("#sellThresholdTextBox").val();
         helperInfo.stock_BuySellDict[selectedStock][1] = sellThreshold;
