@@ -114,9 +114,10 @@ $(document).ready(function() {
     });
 
     $("#graphAndThresholdBtns a").on("click", function() {
-        //Because chartInfo.stockSymbol is set once the page loads
-        //It's possible to access it without it being null
         MakeChart(chartInfo.stockSymbol, this.id);
+        //Because chartInfo.stockSymbol is set to a default value
+        //once the page loads It's possible to 
+        //access it without it being null
     })
     $(document).on('click', '#setBuyThreshold', function() {
         var buyThreshold = $("#buyThresholdTextBox").val();

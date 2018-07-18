@@ -47,13 +47,11 @@ function MakeChart(stockSymbol, intervalChoice) {
         dataType: "JSON",
         contentType: "application/json",
         success: function(response) {
-            var count = 2;
             for(var price in response ) {
-                if(response[price]['high'] != -1 && count % 3 == 0 ) {
+                if(response[price]['high'] != -1) {
                     dataPoints.push(response[price]['high']);
                     timeStamps.push(response[price]['label']);
                 }
-                count++;
             }
             openPrice = dataPoints[0];
             // It's possible to hardcode the 0th-index access beccause
@@ -98,6 +96,16 @@ function MakeChart(stockSymbol, intervalChoice) {
                   },
                   legend: {
                       display: false
+                  },
+                  annotation: {
+                    annotations: [{
+                      type: 'line',
+                      mode: 'horizontal',
+                      scaleID: 'y-axis-0',
+                      value: openPrice,
+                      borderColor: 'rgb(75, 192, 192)',
+                      borderWidth: 4,
+                    }]
                   },
                   elements: {
                     point: {
@@ -158,17 +166,15 @@ function updateGraph() {
                 graph.data.datasets[0].data.push(response);
                 graph.data.labels.push(time);
                 graph.update();
-                console.log("response: " + response + " time: " + time);
             }
         },
         error: function(response) {
             console.log(response);
         }
-    });
-    
+    });    
 }
 
 function recursiveUpdateGraph() {
-    setInterval(updateGraph, 2000);
+    setInterval(updateGraph, 60000);
 }
 

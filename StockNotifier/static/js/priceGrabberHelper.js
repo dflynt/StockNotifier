@@ -14,6 +14,7 @@ function APICall() {
             contentType: "application/json",
             success: function(response) {
                 for(var key in response) {
+                    var openPrice = response[key]['quote']['open'];
                     var stockSymbol = response[key]['quote']['symbol'];
                     var stockPrice = "";
                     //if no current price,
@@ -27,6 +28,7 @@ function APICall() {
                     if($("#" + stockSymbol).length == 0){ //if the button doesn't already exist
                         $("#userStockList").append("<button type='button' class='btn btn-primary' id = " + stockSymbol + ">" + 
                         "" + stockSymbol + ": $" + stockPrice.toFixed(2) + " </button>");
+                        $("#" + stockSymbol).addClass("btn btn-secondary");
 
                         //if statement is a simple state mechanism to display only 
                         //the first stock in the user's watchlist once the page loads
@@ -37,7 +39,17 @@ function APICall() {
                     }
                     //else, update value of the already existing button
                     else {
-                        $("#" + stockSymbol).html(stockSymbol + ": $" + stockPrice.toFixed(2) + " ");   
+                        $("#" + stockSymbol).html(stockSymbol + ": $" + stockPrice.toFixed(2) + " ");
+                        if(stockPrice < openPrice) {
+                            if($("#" + stockSymbol).attr("class") != "btn btn-danger") {
+                                $("#" + stockSymbol).addClass("btn btn-danger");
+                            }  
+                        }
+                        else {
+                            if($("#" + stockSymbol).attr("class") != "btn btn-success") {
+                                $("#" + stockSymbol).addClass("btn btn-success");
+                            }
+                        }
                     }
                     var buyThresholdPrice = helperInfo.stock_BuySellDict[stockSymbol][0];
                     var sellThresholdPrice = helperInfo.stock_BuySellDict[stockSymbol][1]
@@ -52,14 +64,15 @@ function APICall() {
                             contentType: "application/json",
                             data: JSON.stringify({"token": helperInfo.token, "reason": "Sell " + stockSymbol}),
                             success: function(response) {
-                                console.log(response);
+
                             },
                             error: function(response) {
                                 console.log(response);
                             }
                         });
                     }
-                    else if(stockPrice <= buyThresholdPrice && buyThresholdPrice != -1 && emailSent == false) {
+                    //at market open, stockPrice can be 0 until data starts coming in
+                    else if(stockPrice <= buyThresholdPrice && stockPrice != 0 && buyThresholdPrice != -1 && emailSent == false) {
                         helperInfo.stock_BuySellDict[stockSymbol].emailSent = true;
                         $.ajax({
                             url: "/priceThresholdMet_sendEmail",
@@ -68,7 +81,6 @@ function APICall() {
                             contentType: "application/json",
                             data: JSON.stringify({"token": helperInfo.token, "reason": "Buy " + stockSymbol}),
                             success: function(response) {
-                                console.log(response);
                             },
                             error: function(response) {
                                 console.log(response);

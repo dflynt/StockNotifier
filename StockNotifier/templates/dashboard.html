@@ -8,7 +8,8 @@
         <script src="{{ url_for('static', filename='js/priceGrabber.js') }}"></script>
         <script src="{{ url_for('static', filename='js/priceGrabberHelper.js') }}"></script>
         <script src="{{ url_for('static', filename='js/ChartJSImpl.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.js"></script>    
     </head>
     <body>
         <div class="container">
@@ -24,16 +25,16 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3" id="watchList">
+                <div class="col-md-3" id="watchList" style="margin-left: -35%;">
                     <div class="btn-group-vertical" role="group" id = "userStockList" style=" position: absolute; margin-top:5%;"></div>
                 </div>
-                <div id="graphAndThresholdBtns" class="col-md-9">
+                <div id="graphAndThresholdBtns" class="col-md-9" style="margin-left: -10%;">
                     <input type="text" id="buyThresholdTextBox" placeholder="Buy Threshold">
                     <a href="#" id="setBuyThreshold"class="btn btn-info">Set Buy Threshold</a>
                     <input type="text" id="sellThresholdTextBox" placeholder="Sell Threshold">
                     <a href="#" id="setSellThreshold" class="btn btn-info">Set Sell Threshold</a>
                     <div id="myChartDiv">
-                        <canvas id="myChart" style="height: 400; width: 400;"></canvas>
+                        <canvas id="myChart" style="height: 600; width: 800;"></canvas>
                     </div>
                     <a href="#" id="1d" class="btn btn-light">1d</a>
                     <a href="#" id="1m" class="btn btn-light">1m</a>
