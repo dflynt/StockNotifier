@@ -21,7 +21,7 @@ def register():
         phone = request.form['phone']
         tokenForNewUser = insertNewUser(str(firstName), str(lastName), str(email), str(password), str(phone), "0")
         if tokenForNewUser != -1: #-1 error code meaning email already taken
-            session['tokenID'] = token
+            session['tokenID'] = tokenForNewUser
             return redirect(url_for("dashboard", uuid=tokenForNewUser))
         else:
             return render_template_string("<h5>Already registered</h5>")
