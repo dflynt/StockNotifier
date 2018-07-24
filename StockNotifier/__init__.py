@@ -3,11 +3,13 @@ import smtplib
 import uuid
 from flask_bootstrap import Bootstrap
 import sqlite3
+from email.mime.text import MIMEText as text
 
 app = Flask(__name__)
 app.config.update(dict(SECRET_KEY="powerful secretkey", WTF_CSRF_SECRET_KEY="a secret key"))
 Bootstrap(app)
-s = smtplib.SMTP('smtp.gmail.com', 587)
+s = smtplib.SMTP()
+s.connect('smtp.gmail.com', 587)
 # start TLS for security
 s.starttls()
 s.login("danielflynt1@gmail.com", "Twentyone21!@#")
@@ -91,22 +93,22 @@ def returnStockList(token):
 
 def sendEmailToAlertUser(token, reason):
     c.execute("SELECT Email from Users WHERE ID = ?", (token,))
-    email = c.fetchone()
-
-    message = reason
-    s.sendmail("danielflynt1@gmail.com", "danielflynt1@gmail.com", message)
+    email = c.fetchone()[0]
+    print(email + " " + reason)
+    m = text(reason)
+    m["Subject"] = "Stock Notifier"
+    m["From"] = "danielflynt1@gmail.com"
+    m["To"] = email
+    s.sendmail("danielflynt1@gmail.com", email, m.as_string())
+    return True
 
 def createSellThreshold(stockSymbol, sellThreshold, token):
     c.execute("UPDATE UserSettings SET SellPrice = ? WHERE Symbol = ? AND ID = ?", (sellThreshold, stockSymbol, token))
     conn.commit()
-    c.execute("SELECT SellPrice FROM UserSettings WHERE ID = ?", (token,))
-    print(c.fetchall())
     return True
 
 def createBuyThreshold(stockSymbol, buyThreshold, token):
     c.execute("UPDATE UserSettings SET BuyPrice = ? WHERE Symbol = ? AND ID = ?", (buyThreshold, stockSymbol, token))
     conn.commit()
-    c.execute("SELECT BuyPrice   FROM UserSettings WHERE ID = ?", (token,))
-    print(c.fetchall())
     return True
 from . import views

@@ -42,7 +42,7 @@ function MakeChart(stockSymbol, intervalChoice) {
     var color; //hexcode for green
     var openPrice;
     $.ajax({
-        url: url,
+        url: url + chartInfo.currentPrice,
         type: "GET",
         dataType: "JSON",
         contentType: "application/json",

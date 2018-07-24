@@ -95,5 +95,6 @@ def priceThresholdMet_sendEmail():
     input = request.get_json()
     token = input["token"]
     reason = input["reason"] #is the reason to buy or sell
+    print("token: " + token + " " + "reason " + reason)
     result = sendEmailToAlertUser(token, reason)
     return jsonify(result)

@@ -114,7 +114,10 @@ $(document).ready(function() {
     });
 
     $("#graphAndThresholdBtns a").on("click", function() {
-        MakeChart(chartInfo.stockSymbol, this.id);
+        if(this.id != "setBuyThreshold" && this.id != "setSellThreshold") {
+            //the buttons with these id's are a tags, we don't want those
+            MakeChart(chartInfo.stockSymbol, this.id);
+        }
         //Because chartInfo.stockSymbol is set to a default value
         //once the page loads It's possible to 
         //access it without it being null
@@ -122,6 +125,7 @@ $(document).ready(function() {
     $(document).on('click', '#setBuyThreshold', function() {
         var buyThreshold = $("#buyThresholdTextBox").val();
         helperInfo.stock_BuySellDict[selectedStock][0] = buyThreshold;
+        helperInfo.stock_BuySellDict[selectedStock].emailSent = false;
         if (buyThreshold.length != 0) {
             $.ajax({
                 url: "/setBuyThreshold",
@@ -142,6 +146,7 @@ $(document).ready(function() {
     $(document).on('click', "#setSellThreshold", function() {
         var sellThreshold = $("#sellThresholdTextBox").val();
         helperInfo.stock_BuySellDict[selectedStock][1] = sellThreshold;
+        helperInfo.stock_BuySellDict[selectedStock].emailSent = false;
         if(sellThreshold.length != 0) {
             $.ajax({
                 url: "/setSellThreshold",

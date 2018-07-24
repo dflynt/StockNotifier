@@ -4,6 +4,7 @@ var helperInfo = {
     stock_BuySellDict: {}
 };
 function APICall() {
+    var emailMessage = "";
     var graphDisplayed = false;
     if(!helperInfo.stockList == "") {
         var url = "https://api.iextrading.com/1.0//stock/market/batch?symbols=" +helperInfo.stockList+"&types=quote";
@@ -54,56 +55,43 @@ function APICall() {
                     var buyThresholdPrice = helperInfo.stock_BuySellDict[stockSymbol][0];
                     var sellThresholdPrice = helperInfo.stock_BuySellDict[stockSymbol][1]
                     var emailSent = helperInfo.stock_BuySellDict[stockSymbol].emailSent;
-                    
-                    if(stockPrice >= sellThresholdPrice && sellThresholdPrice != -1 && emailSent == false) {
+                    if(stockPrice >= sellThresholdPrice && stockPrice != 0 && sellThresholdPrice != -1 && emailSent == false) {
                         helperInfo.stock_BuySellDict[stockSymbol].emailSent = true;
-                        $.ajax({
-                            url: "/priceThresholdMet_sendEmail",
-                            type: "POST",
-                            dataType: "JSON",
-                            contentType: "application/json",
-                            data: JSON.stringify({"token": helperInfo.token, "reason": "Sell " + stockSymbol}),
-                            success: function(response) {
-
-                            },
-                            error: function(response) {
-                                console.log(response);
-                            }
-                        });
+                        emailMessage += "Sell: " + stockSymbol + "\n";
+                        console.log("adding sell: " + stockSymbol);
                     }
                     //at market open, stockPrice can be 0 until data starts coming in
                     else if(stockPrice <= buyThresholdPrice && stockPrice != 0 && buyThresholdPrice != -1 && emailSent == false) {
                         helperInfo.stock_BuySellDict[stockSymbol].emailSent = true;
-                        $.ajax({
-                            url: "/priceThresholdMet_sendEmail",
-                            type: "POST",
-                            dataType: "JSON",
-                            contentType: "application/json",
-                            data: JSON.stringify({"token": helperInfo.token, "reason": "Buy " + stockSymbol}),
-                            success: function(response) {
-                            },
-                            error: function(response) {
-                                console.log(response);
-                            }
-                        });
-                    }
-                    else {
-                        //not in the buy/sell threshold so reset the variable 
-                        //once it's back in the threshold, an email will be sent
-                        //the use of the if statement is to avoid making the write to memory
-                        //it saves maybe .00001 seconds
-                        if(helperInfo.stock_BuySellDict[stockSymbol].emailSent != false) {
-                            helperInfo.stock_BuySellDict[stockSymbol].emailSent = false;
-                        }
+                        emailMessage += "Buy: " + stockSymbol + "\n";
+                        console.log("adding buy: " + stockSymbol);
                     }
                 }
-                
+                if(emailMessage.length != 0) {
+                    console.log("emailMessage: " + emailMessage);
+                    $.ajax({
+                        url: "/priceThresholdMet_sendEmail",
+                        type: "POST",
+                        dataType: "JSON",
+                        contentType: "application/json",
+                        data: JSON.stringify({"token": helperInfo.token, "reason": emailMessage}),
+                        success: function(response) {
+                            console.log(response);
+                        },
+                        error: function(response) {
+                            console.log(response);
+                        }
+                    });
+                    emailMessage = "";
+                }
             },
             error: function(response) {
                 console.log(response);
             }
         });
+
     }
+    
 }
 
 function recursiveAPICall() {
